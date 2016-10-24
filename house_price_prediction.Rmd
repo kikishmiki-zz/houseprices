@@ -1,0 +1,67 @@
+---
+title: "House Price Prediction"
+author: "Kiana Toufighi"
+date: "18 October 2016"
+output: 
+  html_document:
+    toc: TRUE
+    number_sections: TRUE
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction 
+
+This is a first attempt at exploring a dataset which a XX features in order to predict price.  I will attempt to use linear regression for modelling these data in the first iteration and more and more advanced techniques only as needed. 
+
+
+## Library Loading
+
+You can also embed plots, for example:
+
+```{r libraries, results = 'hide', message = FALSE, warning = FALSE}
+library(ggplot2)
+library(ggthemes)
+library(randomForest)
+library(Amelia)
+
+```
+
+
+# Data Wrangling
+
+In this section we load data, familiarise ourselves with the data, examine missing features, and look at how to imputate missing values. 
+
+## Data Loading
+
+```{r data, results = FALSE}
+
+# build absolute path for loading data files
+path <- file.path("/Users", Sys.info()["user"], "Dropbox (Personal)/Script Repository/R/Kaggle/HousePrices")
+train <- read.csv(file.path(path, "data/train.csv"), header = TRUE, na.strings = c("", NA))
+test <- read.csv(file.path(path, "data/test.csv"), header = TRUE)
+whole <- rbind(train[,-81], test)
+
+
+# examine missing values in dataset
+missmap(whole, col = c("yellow", "blue"), x.cex = 0.6)
+```
+
+With a single glance we see that the top five features missing most of their values are: PoolQC, MiscFeatures, Alley, Fence, and FireplaceQu. What we can impute however are all features that have to do with Garage and Basement. 
+```{r some_plots, echo = FALSE}
+
+# look at price range (IQR) within each neighbourhood
+ggplot(train, aes(x = as.factor(Neighborhood), y = SalePrice)) +
+  geom_boxplot() +
+  labs(title = "Sale Price by Neighbourhood", x = "Neighbourhood", y = "Sale Price") +
+  scale_x_discrete(labels = abbreviate) +
+  theme_bw()
+
+
+```
+
+# Feature Engineering 
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
